@@ -1,0 +1,25 @@
+# IDE directories
+.vscode/
+.idea/
+
+# Git files
+*.orig
+
+# Binaries and builds
+build/
+*.exe
+*.exe~
+
+# Configurations
+config.yaml
+
+# Documentation
+docs/
+
+# Logging
+logs/
+*.log
+
+# Test binary, built with `go test -c`
+*.test
+cmd/__debug_bin
