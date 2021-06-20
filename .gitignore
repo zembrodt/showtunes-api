@@ -11,7 +11,7 @@ build/
 *.exe~
 
 # Configurations
-config.yaml
+config/config.yaml
 
 # Documentation
 docs/
