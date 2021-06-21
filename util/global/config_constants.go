@@ -8,7 +8,7 @@ const (
 
 	// Configuration names
 	ServerAddress    = "ServerAddress"
-	ServerPort       = "ServerPort"
+	ServerPort       = "PORT"
 	PublicAddress    = "PublicAddress"
 	OriginKey        = "Origin"
 	MaxAgeKey        = "MaxAge"
