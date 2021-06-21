@@ -22,6 +22,12 @@ type httpResponse struct {
 	Message string `json:"message"`
 }
 
+type pingResponse struct {
+	Response httpResponse `json:"response"`
+	Version  string       `json:"version"`
+	ApiRoot  string       `json:"apiRoot"`
+}
+
 type httpSuccess httpResponse
 
 type httpError httpResponse
@@ -37,20 +43,25 @@ const (
 	errorInternalServer = "Internal server error"
 	errorInvalidRequest = "Invalid request"
 	errorInvalidPayload = "Invalid payload"
+
+	pingPath = "/ping"
 )
 
 type MusicAPIController struct {
-	router      *mux.Router
-	resourcesPath   string
-	clientId string
-	clientSecret string
-	conf *oauth2.Config
+	router        *mux.Router
+	routerApi     *mux.Router
+	resourcesPath string
+	clientId      string
+	clientSecret  string
+	conf          *oauth2.Config
 }
 
 func New(clientId, clientSecret string) *MusicAPIController {
-	r := mux.NewRouter().PathPrefix(musicapi.APIRoot).Subrouter()
+	r := mux.NewRouter()
+	rApi := r.PathPrefix(musicapi.APIRoot).Subrouter()
 	controller := &MusicAPIController{
 		router:       r,
+		routerApi:    rApi,
 		clientId:     clientId,
 		clientSecret: clientSecret,
 		conf: &oauth2.Config{
@@ -62,6 +73,7 @@ func New(clientId, clientSecret string) *MusicAPIController {
 	}
 
 	// Add handlers
+	controller.createGeneralHandlers()
 	controller.createAuthHandlers()
 
 	// Add middlewares for all endpoints
@@ -108,11 +120,37 @@ func (c *MusicAPIController) Start(address string, port int) {
 	os.Exit(0)
 }
 
+func (c *MusicAPIController) createGeneralHandlers() {
+	c.handleGeneralFunc(pingPath, c.ping, http.MethodGet)
+}
+
+func (c *MusicAPIController) ping(w http.ResponseWriter, r *http.Request) {
+	respondWithJSON(w, http.StatusOK, pingResponse{
+		Response: httpResponse{
+			Code: http.StatusOK,
+			Message: jsonKeySuccess,
+		},
+		Version: musicapi.Version,
+		ApiRoot: musicapi.APIRoot,
+	})
+}
+
 // Wrapper to call HandleFunc on the Mux securedRouter and track API endpoints
 // Defaults to use all security middleware
+// Used for all routes that are prepended with API root
 func (c *MusicAPIController) handleFunc(path string, f http.HandlerFunc, methods ...string) {
+	c.handleFuncRouter(path, f, c.routerApi, methods...)
+}
+
+// Wrapper used for all paths beginning at root
+func (c *MusicAPIController) handleGeneralFunc(path string, f http.HandlerFunc, methods ...string) {
+	c.handleFuncRouter(path, f, c.router, methods...)
+}
+
+// Wrapper for mux.Router.HandleFunc
+func (c *MusicAPIController) handleFuncRouter(path string, f http.HandlerFunc, r *mux.Router, methods ...string) {
 	methods = append(methods, http.MethodOptions)
-	c.router.HandleFunc(path, f).Methods(methods...)
+	r.HandleFunc(path, f).Methods(methods...)
 }
 
 // Write a JSON response with the given HTTP code and payload

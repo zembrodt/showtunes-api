@@ -13,6 +13,16 @@ import (
 	"runtime"
 )
 
+var osEnvConfigs = []string{
+	global.ServerAddress,
+	global.ServerPort,
+	global.PublicAddress,
+	global.ClientIdKey,
+	global.ClientSecretKey,
+	global.OriginKey,
+	global.MaxAgeKey,
+}
+
 func main() {
 	// CLI arguments
 	var displayVersion bool
@@ -53,14 +63,22 @@ func setConfigurations() {
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found, continue with defaults
-			log.Printf("%s%s.%s not found, using defaults\n",
-				global.ConfigFilePath,
-				global.ConfigFileName,
+			log.Printf("%s.%s not found, using defaults\n",
+				filepath.Join(global.ConfigFilePath, global.ConfigFileName),
 				global.ConfigFileExtension,
 			)
 		} else {
 			// Config file found, but error produced
 			panic(fmt.Errorf("Fatal error reading config file: %s\n", err))
+		}
+	}
+
+	// Check for environment variables
+	for _, key := range osEnvConfigs {
+		val, lookup := os.LookupEnv(key)
+		if lookup {
+			log.Printf("Adding env variable for %s\n", key)
+			viper.Set(key, val)
 		}
 	}
 }
