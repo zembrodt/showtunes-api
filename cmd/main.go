@@ -52,6 +52,7 @@ func setConfigurations() {
 	viper.SetDefault(global.ServerPort, 8000)
 	viper.SetDefault(global.ClientIdKey, "")
 	viper.SetDefault(global.ClientSecretKey, "")
+	viper.SetDefault(global.OriginKey, "*")
 	viper.SetDefault(global.MaxAgeKey, "86400")
 
 	// Get config from config.yaml
