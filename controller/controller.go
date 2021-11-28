@@ -75,6 +75,7 @@ func New(clientId, clientSecret string) *MusicAPIController {
 	// Add handlers
 	controller.createGeneralHandlers()
 	controller.createAuthHandlers()
+	controller.createColorHandlers()
 
 	// Add middlewares for all endpoints
 	controller.router.Use(corsMiddleware)
