@@ -18,11 +18,13 @@ const (
 
 	urlKey = "url"
 
-	barcodeColorThreshold = 186
+	barCodeColorThreshold = 186
 )
 
-var validDomains = map[string]bool {
-	"i.scdn.co": true,
+func validDomains() map[string]bool {
+	return map[string]bool{
+		"i.scdn.co": true,
+	}
 }
 
 func (c *MusicAPIController) createColorHandlers() {
@@ -51,7 +53,7 @@ func (c *MusicAPIController) getDominateColor(w http.ResponseWriter, r *http.Req
 		return
 	}
 	// Check if the domain for this image is an accepted one
-	if !validDomains[strings.ToLower(coverArtUrl.Hostname())] {
+	if !validDomains()[strings.ToLower(coverArtUrl.Hostname())] {
 		respondWithError(w, http.StatusBadRequest, "The provided domain in the URL is invalid")
 		return
 	}
@@ -85,7 +87,11 @@ func (c *MusicAPIController) getDominateColor(w http.ResponseWriter, r *http.Req
 	rgb := dominantcolor.Find(img)
 	colorResponse.Color = dominantcolor.Hex(rgb)
 	// See https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
-	colorResponse.UseBlackBarcodeColor = float32(rgb.R) * 0.299 + float32(rgb.G) * 0.587 + float32(rgb.B) * 0.114 > barcodeColorThreshold
+	if float32(rgb.R) * 0.299 + float32(rgb.G) * 0.587 + float32(rgb.B) * 0.114 > barCodeColorThreshold {
+		colorResponse.BarCodeColor = "black"
+	} else {
+		colorResponse.BarCodeColor = "white"
+	}
 
 	respondWithJSON(w, http.StatusOK, colorResponse)
 }
