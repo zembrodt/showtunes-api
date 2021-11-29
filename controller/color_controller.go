@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	"github.com/cenkalti/dominantcolor"
-	"github.com/zembrodt/music-display-api/model"
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
@@ -15,10 +14,7 @@ import (
 
 const (
 	pathColor = "/color"
-
-	urlKey = "url"
-
-	barCodeColorThreshold = 186
+	urlKey    = "url"
 )
 
 func validDomains() map[string]bool {
@@ -39,8 +35,6 @@ func (c *MusicAPIController) getDominateColor(w http.ResponseWriter, r *http.Req
 	}
 
 	encodedUrl := urls[0]
-	// TODO: get image from url
-
 	coverArtUrlRaw, err := url.QueryUnescape(encodedUrl)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Unable to unescape the provided cover art url: " + err.Error())
@@ -82,16 +76,6 @@ func (c *MusicAPIController) getDominateColor(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	// Get dominant color of the album art
-	var colorResponse model.ColorResponse
-	rgb := dominantcolor.Find(img)
-	colorResponse.Color = dominantcolor.Hex(rgb)
-	// See https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
-	if float32(rgb.R) * 0.299 + float32(rgb.G) * 0.587 + float32(rgb.B) * 0.114 > barCodeColorThreshold {
-		colorResponse.BarCodeColor = "black"
-	} else {
-		colorResponse.BarCodeColor = "white"
-	}
-
-	respondWithJSON(w, http.StatusOK, colorResponse)
+	// Return dominant color of the album art
+	respondWithJSON(w, http.StatusOK, dominantcolor.Hex(dominantcolor.Find(img)))
 }
