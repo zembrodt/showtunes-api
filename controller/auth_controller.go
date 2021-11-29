@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"golang.org/x/oauth2"
 	"net/http"
 )
 
@@ -20,6 +21,7 @@ var scopes = []string{
 
 func (c *MusicAPIController) createAuthHandlers() {
 	c.handleFunc(pathToken, c.getAuthTokens, http.MethodPost)
+	c.handleFunc(pathToken, c.updateAuthToken, http.MethodPut)
 }
 
 func (c *MusicAPIController) getAuthTokens(w http.ResponseWriter, r *http.Request) {
@@ -44,4 +46,26 @@ func (c *MusicAPIController) getAuthTokens(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	respondWithJSON(w, http.StatusOK, token)
+}
+
+func (c *MusicAPIController) updateAuthToken(w http.ResponseWriter, r *http.Request) {
+	// Get request parameters
+	code := r.FormValue(codeKey)
+
+	if len(code) == 0 {
+		respondWithError(w, http.StatusBadRequest, "Invalid %s", codeKey)
+		return
+	}
+
+	refreshToken := &oauth2.Token{
+		RefreshToken: code,
+	}
+
+	tokenSource := c.conf.TokenSource(context.Background(), refreshToken)
+	newToken, err := tokenSource.Token()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Unable to refresh auth token: %s", err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, newToken)
 }
