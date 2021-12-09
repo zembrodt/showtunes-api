@@ -19,12 +19,12 @@ var scopes = []string{
 	"user-modify-playback-state",
 }
 
-func (c *ShowtunesAPIController) createAuthHandlers() {
+func (c *ShowTunesAPIController) createAuthHandlers() {
 	c.handleFunc(pathToken, c.getAuthTokens, http.MethodPost)
 	c.handleFunc(pathToken, c.updateAuthToken, http.MethodPut)
 }
 
-func (c *ShowtunesAPIController) getAuthTokens(w http.ResponseWriter, r *http.Request) {
+func (c *ShowTunesAPIController) getAuthTokens(w http.ResponseWriter, r *http.Request) {
 	// Get request parameters
 	code := r.FormValue(codeKey)
 	redirectUri := r.FormValue(redirectUriKey)
@@ -48,7 +48,7 @@ func (c *ShowtunesAPIController) getAuthTokens(w http.ResponseWriter, r *http.Re
 	respondWithJSON(w, http.StatusOK, token)
 }
 
-func (c *ShowtunesAPIController) updateAuthToken(w http.ResponseWriter, r *http.Request) {
+func (c *ShowTunesAPIController) updateAuthToken(w http.ResponseWriter, r *http.Request) {
 	// Get request parameters
 	code := r.FormValue(codeKey)
 

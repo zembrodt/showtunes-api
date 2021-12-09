@@ -1,6 +1,6 @@
-# Showtunes API
+# ShowTunes API
 
-Go server used by the Showtunes app to make API requests where a client secret is needed.
+Go server used by the ShowTunes app to make API requests where a client secret is needed.
 
 ## Requests
 * */v1/auth/tokens* (**POST**): Retrieve a Spotify auth token
