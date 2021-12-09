@@ -48,7 +48,7 @@ const (
 	pingPath = "/ping"
 )
 
-type ShowtunesAPIController struct {
+type ShowTunesAPIController struct {
 	router        *mux.Router
 	routerApi     *mux.Router
 	resourcesPath string
@@ -57,10 +57,10 @@ type ShowtunesAPIController struct {
 	conf          *oauth2.Config
 }
 
-func New(clientId, clientSecret string) *ShowtunesAPIController {
+func New(clientId, clientSecret string) *ShowTunesAPIController {
 	r := mux.NewRouter()
 	rApi := r.PathPrefix(showtunes.APIRoot).Subrouter()
-	controller := &ShowtunesAPIController{
+	controller := &ShowTunesAPIController{
 		router:       r,
 		routerApi:    rApi,
 		clientId:     clientId,
@@ -87,7 +87,7 @@ func New(clientId, clientSecret string) *ShowtunesAPIController {
 	return controller
 }
 
-func (c *ShowtunesAPIController) Start(address string, port int) {
+func (c *ShowTunesAPIController) Start(address string, port int) {
 	srv := &http.Server{
 		Addr: fmt.Sprintf("%s:%d", address, port),
 		WriteTimeout: time.Second * 15,
@@ -122,11 +122,11 @@ func (c *ShowtunesAPIController) Start(address string, port int) {
 	os.Exit(0)
 }
 
-func (c *ShowtunesAPIController) createGeneralHandlers() {
+func (c *ShowTunesAPIController) createGeneralHandlers() {
 	c.handleGeneralFunc(pingPath, c.ping, http.MethodGet)
 }
 
-func (c *ShowtunesAPIController) ping(w http.ResponseWriter, r *http.Request) {
+func (c *ShowTunesAPIController) ping(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, pingResponse{
 		Response: httpResponse{
 			Code: http.StatusOK,
@@ -141,17 +141,17 @@ func (c *ShowtunesAPIController) ping(w http.ResponseWriter, r *http.Request) {
 // Wrapper to call HandleFunc on the Mux securedRouter and track API endpoints
 // Defaults to use all security middleware
 // Used for all routes that are prepended with API root
-func (c *ShowtunesAPIController) handleFunc(path string, f http.HandlerFunc, methods ...string) {
+func (c *ShowTunesAPIController) handleFunc(path string, f http.HandlerFunc, methods ...string) {
 	c.handleFuncRouter(path, f, c.routerApi, methods...)
 }
 
 // Wrapper used for all paths beginning at root
-func (c *ShowtunesAPIController) handleGeneralFunc(path string, f http.HandlerFunc, methods ...string) {
+func (c *ShowTunesAPIController) handleGeneralFunc(path string, f http.HandlerFunc, methods ...string) {
 	c.handleFuncRouter(path, f, c.router, methods...)
 }
 
 // Wrapper for mux.Router.HandleFunc
-func (c *ShowtunesAPIController) handleFuncRouter(path string, f http.HandlerFunc, r *mux.Router, methods ...string) {
+func (c *ShowTunesAPIController) handleFuncRouter(path string, f http.HandlerFunc, r *mux.Router, methods ...string) {
 	methods = append(methods, http.MethodOptions)
 	r.HandleFunc(path, f).Methods(methods...)
 }
