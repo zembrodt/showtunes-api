@@ -1,8 +1,8 @@
 #!/bin/bash
-# Generate and build the Music Display API server code and executable
+# Generate and build the Showtunes API server code and executable
 
 # Set executable name
-execname=musicapi
+execname=showtunesapi
 
 # Set absolute project path
 projectpath="$(dirname "$( cd ../"$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )")"

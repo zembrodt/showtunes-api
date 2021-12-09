@@ -1,9 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
-rem Generate and build the Music Display API server code and executable
+rem Generate and build the Showtunes API server code and executable
 
 rem Set executable name
-set execname=musicapi.exe
+set execname=showtunesapi.exe
 
 rem Set absolute project path
 for %%a in ("%~dp0\.") do for %%b in ("%%~dpa\.") do for %%c in ("%%~dpb\.") do (

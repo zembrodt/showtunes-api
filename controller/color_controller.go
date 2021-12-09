@@ -23,11 +23,11 @@ func validDomains() map[string]bool {
 	}
 }
 
-func (c *MusicAPIController) createColorHandlers() {
+func (c *ShowtunesAPIController) createColorHandlers() {
 	c.handleFunc(pathColor, c.getDominateColor, http.MethodGet)
 }
 
-func (c *MusicAPIController) getDominateColor(w http.ResponseWriter, r *http.Request) {
+func (c *ShowtunesAPIController) getDominateColor(w http.ResponseWriter, r *http.Request) {
 	urls, ok := r.URL.Query()[urlKey]
 	if !ok || len(urls[0]) < 1 {
 		respondWithError(w, http.StatusBadRequest, "Request does not contain id")

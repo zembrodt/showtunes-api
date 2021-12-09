@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/spf13/viper"
-	musicapi "github.com/zembrodt/music-display-api"
-	"github.com/zembrodt/music-display-api/controller"
-	"github.com/zembrodt/music-display-api/util/global"
+	"github.com/zembrodt/showtunes-api"
+	"github.com/zembrodt/showtunes-api/controller"
+	"github.com/zembrodt/showtunes-api/util/global"
 	"log"
 	"os"
 	"path/filepath"
@@ -30,7 +30,7 @@ func main() {
 	flag.Parse()
 
 	if displayVersion {
-		fmt.Printf("%s v%s\n",musicapi.Name, musicapi.Version)
+		fmt.Printf("%s v%s\n", showtunes.Name, showtunes.Version)
 		os.Exit(0)
 	}
 
