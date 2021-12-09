@@ -1,4 +1,4 @@
-module github.com/zembrodt/music-display-api
+module github.com/zembrodt/showtunes-api
 
 go 1.16
 

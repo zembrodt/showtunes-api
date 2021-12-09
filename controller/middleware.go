@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/spf13/viper"
-	"github.com/zembrodt/music-display-api/util/global"
+	"github.com/zembrodt/showtunes-api/util/global"
 	"log"
 	"net/http"
 	"strings"

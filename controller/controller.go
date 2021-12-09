@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	musicapi "github.com/zembrodt/music-display-api"
+	"github.com/zembrodt/showtunes-api"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/spotify"
 	"log"
@@ -24,6 +24,7 @@ type httpResponse struct {
 
 type pingResponse struct {
 	Response httpResponse `json:"response"`
+	Name     string       `json:"name"`
 	Version  string       `json:"version"`
 	ApiRoot  string       `json:"apiRoot"`
 }
@@ -47,7 +48,7 @@ const (
 	pingPath = "/ping"
 )
 
-type MusicAPIController struct {
+type ShowtunesAPIController struct {
 	router        *mux.Router
 	routerApi     *mux.Router
 	resourcesPath string
@@ -56,10 +57,10 @@ type MusicAPIController struct {
 	conf          *oauth2.Config
 }
 
-func New(clientId, clientSecret string) *MusicAPIController {
+func New(clientId, clientSecret string) *ShowtunesAPIController {
 	r := mux.NewRouter()
-	rApi := r.PathPrefix(musicapi.APIRoot).Subrouter()
-	controller := &MusicAPIController{
+	rApi := r.PathPrefix(showtunes.APIRoot).Subrouter()
+	controller := &ShowtunesAPIController{
 		router:       r,
 		routerApi:    rApi,
 		clientId:     clientId,
@@ -86,7 +87,7 @@ func New(clientId, clientSecret string) *MusicAPIController {
 	return controller
 }
 
-func (c *MusicAPIController) Start(address string, port int) {
+func (c *ShowtunesAPIController) Start(address string, port int) {
 	srv := &http.Server{
 		Addr: fmt.Sprintf("%s:%d", address, port),
 		WriteTimeout: time.Second * 15,
@@ -121,35 +122,36 @@ func (c *MusicAPIController) Start(address string, port int) {
 	os.Exit(0)
 }
 
-func (c *MusicAPIController) createGeneralHandlers() {
+func (c *ShowtunesAPIController) createGeneralHandlers() {
 	c.handleGeneralFunc(pingPath, c.ping, http.MethodGet)
 }
 
-func (c *MusicAPIController) ping(w http.ResponseWriter, r *http.Request) {
+func (c *ShowtunesAPIController) ping(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, pingResponse{
 		Response: httpResponse{
 			Code: http.StatusOK,
 			Message: jsonKeySuccess,
 		},
-		Version: musicapi.Version,
-		ApiRoot: musicapi.APIRoot,
+		Name:    showtunes.Name,
+		Version: showtunes.Version,
+		ApiRoot: showtunes.APIRoot,
 	})
 }
 
 // Wrapper to call HandleFunc on the Mux securedRouter and track API endpoints
 // Defaults to use all security middleware
 // Used for all routes that are prepended with API root
-func (c *MusicAPIController) handleFunc(path string, f http.HandlerFunc, methods ...string) {
+func (c *ShowtunesAPIController) handleFunc(path string, f http.HandlerFunc, methods ...string) {
 	c.handleFuncRouter(path, f, c.routerApi, methods...)
 }
 
 // Wrapper used for all paths beginning at root
-func (c *MusicAPIController) handleGeneralFunc(path string, f http.HandlerFunc, methods ...string) {
+func (c *ShowtunesAPIController) handleGeneralFunc(path string, f http.HandlerFunc, methods ...string) {
 	c.handleFuncRouter(path, f, c.router, methods...)
 }
 
 // Wrapper for mux.Router.HandleFunc
-func (c *MusicAPIController) handleFuncRouter(path string, f http.HandlerFunc, r *mux.Router, methods ...string) {
+func (c *ShowtunesAPIController) handleFuncRouter(path string, f http.HandlerFunc, r *mux.Router, methods ...string) {
 	methods = append(methods, http.MethodOptions)
 	r.HandleFunc(path, f).Methods(methods...)
 }

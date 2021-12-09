@@ -1,5 +1,14 @@
-# Music Display API
+# Showtunes API
 
-Go server used by the Music Display app to make API requests where a client secret is needed.
+Go server used by the Showtunes app to make API requests where a client secret is needed.
 
-Server is deployed to https://music-display-api.herokuapp.com/ for development purposes.
+## Requests
+* */v1/auth/tokens* (**POST**): Retrieve a Spotify auth token
+  * Expects *code* and *redirect_uri*
+  * Returns a new auth token
+* */v1/auth/tokens* (**PUT**): Refresh a Spotify auth token
+  * Expects refresh token as *code*
+  * Returns an updated auth token
+* */v1/color* (**GET**): Retrieve the dominant color of a given album's cover art
+  * Expects *url* - must be to an image hosted by Spotify (*i.scdn.co*)
+  * Returns the dominant color in hex

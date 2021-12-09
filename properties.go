@@ -1,7 +1,7 @@
-package musicapi
+package showtunes
 
 const (
-	Name    = "Music Display API"
-	Version = "0.1.1"
-	APIRoot = "/api"
+	Name    = "Showtunes API"
+	Version = "1.0.0"
+	APIRoot = "/v1"
 )
