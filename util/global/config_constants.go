@@ -1,19 +1,21 @@
 package global
 
 const (
+	EnvPrefix = "SHOWTUNES"
+
 	// Configuration file
 	ConfigFileName      = "config"
 	ConfigFileExtension = "yaml"
 	ConfigFilePath      = "config"
 
 	// Configuration names
-	ServerAddress    = "ServerAddress"
-	ServerPort       = "PORT"
-	PublicAddress    = "PublicAddress"
-	OriginKey        = "Origin"
-	MaxAgeKey        = "MaxAge"
+	ServerAddressKey = "SERVER_ADDRESS"
+	ServerPortKey    = "SERVER_PORT"
+	OriginKey        = "ORIGIN"
+	MaxAgeKey        = "MAX_AGE"
 
 	// Spotify Configurations
-	ClientIdKey     = "ClientId"
-	ClientSecretKey = "ClientSecret"
+	ClientIdKey     = "CLIENT_ID"
+	ClientSecretKey = "CLIENT_SECRET"
+	ValidDomainsKey = "VALID_DOMAINS"
 )

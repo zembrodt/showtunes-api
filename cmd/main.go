@@ -14,13 +14,13 @@ import (
 )
 
 var osEnvConfigs = []string{
-	global.ServerAddress,
-	global.ServerPort,
-	global.PublicAddress,
+	global.ServerAddressKey,
+	global.ServerPortKey,
 	global.ClientIdKey,
 	global.ClientSecretKey,
 	global.OriginKey,
 	global.MaxAgeKey,
+	global.ValidDomainsKey,
 }
 
 func main() {
@@ -36,11 +36,8 @@ func main() {
 
 	setConfigurations()
 
-	serverAddress := viper.GetString(global.ServerAddress)
-	serverPort := viper.GetInt(global.ServerPort)
-
-	//repo := repository.New(db)
-	//svc := service.New(repo, expiryTime)
+	serverAddress := viper.GetString(global.ServerAddressKey)
+	serverPort := viper.GetInt(global.ServerPortKey)
 
 	server := controller.New(viper.GetString(global.ClientIdKey), viper.GetString(global.ClientSecretKey))
 	server.Start(serverAddress, serverPort)
@@ -48,12 +45,13 @@ func main() {
 
 func setConfigurations() {
 	// Set config defaults
-	viper.SetDefault(global.ServerAddress, "localhost")
-	viper.SetDefault(global.ServerPort, 8000)
+	viper.SetDefault(global.ServerAddressKey, "localhost")
+	viper.SetDefault(global.ServerPortKey, 8000)
 	viper.SetDefault(global.ClientIdKey, "")
 	viper.SetDefault(global.ClientSecretKey, "")
 	viper.SetDefault(global.OriginKey, "*")
 	viper.SetDefault(global.MaxAgeKey, "86400")
+	viper.SetDefault(global.ValidDomainsKey, "i.scdn.co")
 
 	// Get config from config.yaml
 	viper.SetConfigName(global.ConfigFileName)
@@ -76,7 +74,7 @@ func setConfigurations() {
 
 	// Check for environment variables
 	for _, key := range osEnvConfigs {
-		val, lookup := os.LookupEnv(key)
+		val, lookup := os.LookupEnv(global.EnvPrefix + "_" + key)
 		if lookup {
 			log.Printf("Adding env variable for %s\n", key)
 			viper.Set(key, val)
