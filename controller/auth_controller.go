@@ -8,23 +8,27 @@ import (
 
 const (
 	pathAuth = "/auth"
-	pathToken = pathAuth + "/tokens"
+	pathToken = pathAuth + "/token"
 
-	codeKey          = "code"
-	redirectUriKey   = "redirect_uri"
+	codeKey         = "code"
+	redirectUriKey  = "redirect_uri"
+	grantTypeKey    = "grant_type"
+	refreshTokenKey = "refresh_token"
 )
 
-var scopes = []string{
-	"user-read-playback-state",
-	"user-modify-playback-state",
-}
-
 func (c *ShowTunesAPIController) createAuthHandlers() {
-	c.handleFunc(pathToken, c.getAuthTokens, http.MethodPost)
-	c.handleFunc(pathToken, c.updateAuthToken, http.MethodPut)
+	c.handleFunc(pathToken, c.handleToken, http.MethodPost)
 }
 
-func (c *ShowTunesAPIController) getAuthTokens(w http.ResponseWriter, r *http.Request) {
+func (c *ShowTunesAPIController) handleToken(w http.ResponseWriter, r *http.Request) {
+	if r.FormValue(grantTypeKey) == refreshTokenKey {
+		c.refreshToken(w, r)
+	} else {
+		c.fetchToken(w, r)
+	}
+}
+
+func (c *ShowTunesAPIController) fetchToken(w http.ResponseWriter, r *http.Request) {
 	// Get request parameters
 	code := r.FormValue(codeKey)
 	redirectUri := r.FormValue(redirectUriKey)
@@ -48,12 +52,12 @@ func (c *ShowTunesAPIController) getAuthTokens(w http.ResponseWriter, r *http.Re
 	respondWithJSON(w, http.StatusOK, token)
 }
 
-func (c *ShowTunesAPIController) updateAuthToken(w http.ResponseWriter, r *http.Request) {
+func (c *ShowTunesAPIController) refreshToken(w http.ResponseWriter, r *http.Request) {
 	// Get request parameters
-	code := r.FormValue(codeKey)
+	code := r.FormValue(refreshTokenKey)
 
 	if len(code) == 0 {
-		respondWithError(w, http.StatusBadRequest, "Invalid %s", codeKey)
+		respondWithError(w, http.StatusBadRequest, "Invalid %s", refreshTokenKey)
 		return
 	}
 

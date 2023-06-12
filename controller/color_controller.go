@@ -12,16 +12,14 @@ import (
 	"strings"
 )
 
+type colorResponse struct {
+	Color string `json:"color"`
+}
+
 const (
 	pathColor = "/color"
 	urlKey    = "url"
 )
-
-func validDomains() map[string]bool {
-	return map[string]bool{
-		"i.scdn.co": true,
-	}
-}
 
 func (c *ShowTunesAPIController) createColorHandlers() {
 	c.handleFunc(pathColor, c.getDominateColor, http.MethodGet)
@@ -47,7 +45,7 @@ func (c *ShowTunesAPIController) getDominateColor(w http.ResponseWriter, r *http
 		return
 	}
 	// Check if the domain for this image is an accepted one
-	if !validDomains()[strings.ToLower(coverArtUrl.Hostname())] {
+	if !c.validDomains[strings.ToLower(coverArtUrl.Hostname())] {
 		respondWithError(w, http.StatusBadRequest, "The provided domain in the URL is invalid")
 		return
 	}
@@ -77,5 +75,7 @@ func (c *ShowTunesAPIController) getDominateColor(w http.ResponseWriter, r *http
 	}
 
 	// Return dominant color of the album art
-	respondWithJSON(w, http.StatusOK, dominantcolor.Hex(dominantcolor.Find(img)))
+	respondWithJSON(w, http.StatusOK, colorResponse{
+		Color: dominantcolor.Hex(dominantcolor.Find(img)),
+	})
 }

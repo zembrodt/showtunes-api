@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/spf13/viper"
 	"github.com/zembrodt/showtunes-api"
+	"github.com/zembrodt/showtunes-api/util/global"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/spotify"
 	"log"
@@ -12,6 +14,7 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -23,10 +26,9 @@ type httpResponse struct {
 }
 
 type pingResponse struct {
-	Response httpResponse `json:"response"`
 	Name     string       `json:"name"`
 	Version  string       `json:"version"`
-	ApiRoot  string       `json:"apiRoot"`
+	ApiRoot  string       `json:"api_root"`
 }
 
 type httpSuccess httpResponse
@@ -54,6 +56,7 @@ type ShowTunesAPIController struct {
 	resourcesPath string
 	clientId      string
 	clientSecret  string
+	validDomains  map[string]bool
 	conf          *oauth2.Config
 }
 
@@ -65,10 +68,10 @@ func New(clientId, clientSecret string) *ShowTunesAPIController {
 		routerApi:    rApi,
 		clientId:     clientId,
 		clientSecret: clientSecret,
+		validDomains: fetchValidDomains(),
 		conf: &oauth2.Config{
 			ClientID: clientId,
 			ClientSecret: clientSecret,
-			Scopes: scopes,
 			Endpoint: spotify.Endpoint,
 		},
 	}
@@ -128,10 +131,6 @@ func (c *ShowTunesAPIController) createGeneralHandlers() {
 
 func (c *ShowTunesAPIController) ping(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, pingResponse{
-		Response: httpResponse{
-			Code: http.StatusOK,
-			Message: jsonKeySuccess,
-		},
 		Name:    showtunes.Name,
 		Version: showtunes.Version,
 		ApiRoot: showtunes.APIRoot,
@@ -191,4 +190,12 @@ func respondWithError(w http.ResponseWriter, code int, message string, params ..
 		Code:    code,
 		Message: fmt.Sprintf(message, params...),
 	})
+}
+
+func fetchValidDomains() map[string]bool {
+	domains := make(map[string]bool)
+	for _, domain := range strings.Split(viper.GetString(global.ValidDomainsKey), ",") {
+		domains[domain] = true
+	}
+	return domains
 }
